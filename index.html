@@ -769,14 +769,7 @@ async function submitForm() {
   btn.textContent = 'Envoi en cours...';
   const data = collectData();
 
-  if (GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbyZW0AQcm2vRd4DqSqaVVM99QWVP8_NkBu9fT3SJBGma41DH53FryOadZd9vly3hao/exec") {
-    // Demo mode - just show the data
-    console.log("Form data:", data);
-    showToast("✅ Données enregistrées (mode démo)");
-    btn.disabled = false;
-    btn.textContent = 'Envoyer';
-    return;
-  }
+ 
 
   try {
     await fetch(GOOGLE_SCRIPT_URL, {
