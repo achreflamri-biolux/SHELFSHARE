@@ -260,7 +260,7 @@ const VOD_QUESTIONS = [
 // ============================================================
 // GOOGLE SHEETS — Your deployed Apps Script URL
 // ============================================================
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZW0AQcm2vRd4DqSqaVVM99QWVP8_NkBu9fT3SJBGma41DH53FryOadZd9vly3hao/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytNQG5m_eihevhZJ17u8xT4LeP3-BSgu4av-kIHHD-5AQY3p_lsQnd5D_noQfItMA/exec";
 
 // ============================================================
 let currentSection = 0;
@@ -374,63 +374,83 @@ function updateProgress() {
   });
 }
 
+// ============================================================
+// COLLECT DATA — Returns an ARRAY of rows (one row per reference)
+// ============================================================
 function collectData() {
   const brand = document.getElementById('brandSelect').value;
   const refs = MARQUES_REFERENCES[brand] || [];
-  
-  // Each reference gets its own Quantité and Prix columns
-  const shelfColumns = {};
-  refs.forEach((ref, i) => {
-    shelfColumns[ref + ' - Qté'] = document.getElementById(`qty_${i}`)?.value || 0;
-    shelfColumns[ref + ' - Prix'] = document.getElementById(`price_${i}`)?.value || '';
-  });
 
+  // Gather VOD answers
   const vodAnswers = {};
   VOD_QUESTIONS.forEach((q, qi) => {
     const selected = document.querySelector(`input[name="vod_${qi}"]:checked`);
-    vodAnswers[`Q${qi+1}`] = selected ? selected.value : '';
+    vodAnswers['Q' + (qi + 1)] = selected ? selected.value : '';
   });
-  return {
+
+  // Base info shared by every row
+  const baseData = {
     timestamp: new Date().toLocaleString('fr-DZ'),
     pos_name: document.getElementById('posName').value,
     pos_owner: document.getElementById('posOwner').value,
     phone: '+213' + document.getElementById('posPhone').value.replace(/\s/g, ''),
     gps: document.getElementById('gpsCoords').value,
     wilaya: document.getElementById('wilayaSelect').value,
-    commune: document.getElementById('communeSelect').value,
-    brand: brand,
-    ...shelfColumns,
-    ...vodAnswers
+    commune: document.getElementById('communeSelect').value
   };
+
+  // Build one row per reference
+  const rows = [];
+  refs.forEach((ref, i) => {
+    rows.push({
+      ...baseData,
+      brand: brand,
+      reference: ref,
+      quantite: document.getElementById('qty_' + i) ? document.getElementById('qty_' + i).value : '0',
+      prix: document.getElementById('price_' + i) ? document.getElementById('price_' + i).value : '',
+      ...vodAnswers
+    });
+  });
+
+  return rows;
 }
+
 function validateForm() {
-  const d = collectData();
-  if (!d.pos_name) { showToast("⚠️ Veuillez saisir le nom du PDV"); goToSection(0); return false; }
-  if (!d.pos_owner) { showToast("⚠️ Veuillez saisir le nom du propriétaire"); goToSection(0); return false; }
-  if (!d.phone || d.phone.length < 7) { showToast("⚠️ Veuillez saisir un numéro valide"); goToSection(0); return false; }
-  if (!d.gps) { showToast("⚠️ Veuillez capturer la localisation GPS"); goToSection(0); return false; }
-  if (!d.wilaya) { showToast("⚠️ Veuillez sélectionner une Wilaya"); goToSection(0); return false; }
-  if (!d.commune) { showToast("⚠️ Veuillez sélectionner une Commune"); goToSection(0); return false; }
-  if (!d.brand) { showToast("⚠️ Veuillez sélectionner une marque"); goToSection(1); return false; }
+  const brand = document.getElementById('brandSelect').value;
+  const posName = document.getElementById('posName').value;
+  const posOwner = document.getElementById('posOwner').value;
+  const phone = document.getElementById('posPhone').value;
+  const gps = document.getElementById('gpsCoords').value;
+  const wilaya = document.getElementById('wilayaSelect').value;
+  const commune = document.getElementById('communeSelect').value;
+
+  if (!posName) { showToast("⚠️ Veuillez saisir le nom du PDV"); goToSection(0); return false; }
+  if (!posOwner) { showToast("⚠️ Veuillez saisir le nom du propriétaire"); goToSection(0); return false; }
+  if (!phone || phone.length < 7) { showToast("⚠️ Veuillez saisir un numéro valide"); goToSection(0); return false; }
+  if (!gps) { showToast("⚠️ Veuillez capturer la localisation GPS"); goToSection(0); return false; }
+  if (!wilaya) { showToast("⚠️ Veuillez sélectionner une Wilaya"); goToSection(0); return false; }
+  if (!commune) { showToast("⚠️ Veuillez sélectionner une Commune"); goToSection(0); return false; }
+  if (!brand) { showToast("⚠️ Veuillez sélectionner une marque"); goToSection(1); return false; }
   return true;
 }
 
 // ============================================================
-// SUBMIT — Always sends to Google Sheets (no demo mode)
+// SUBMIT — Sends array of rows to Google Sheets
 // ============================================================
 async function submitForm() {
   if (!validateForm()) return;
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.textContent = 'Envoi en cours...';
-  const data = collectData();
+
+  const rows = collectData();
 
   try {
     await fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(rows)
     });
     showToast("✅ Données envoyées avec succès !");
     setTimeout(() => {
