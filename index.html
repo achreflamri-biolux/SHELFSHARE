@@ -377,11 +377,14 @@ function updateProgress() {
 function collectData() {
   const brand = document.getElementById('brandSelect').value;
   const refs = MARQUES_REFERENCES[brand] || [];
-  const shelfData = refs.map((ref, i) => ({
-    reference: ref,
-    quantite: document.getElementById(`qty_${i}`)?.value || 0,
-    prix: document.getElementById(`price_${i}`)?.value || ''
-  }));
+  
+  // Each reference gets its own Quantité and Prix columns
+  const shelfColumns = {};
+  refs.forEach((ref, i) => {
+    shelfColumns[ref + ' - Qté'] = document.getElementById(`qty_${i}`)?.value || 0;
+    shelfColumns[ref + ' - Prix'] = document.getElementById(`price_${i}`)?.value || '';
+  });
+
   const vodAnswers = {};
   VOD_QUESTIONS.forEach((q, qi) => {
     const selected = document.querySelector(`input[name="vod_${qi}"]:checked`);
@@ -396,11 +399,10 @@ function collectData() {
     wilaya: document.getElementById('wilayaSelect').value,
     commune: document.getElementById('communeSelect').value,
     brand: brand,
-    shelf_data: JSON.stringify(shelfData),
+    ...shelfColumns,
     ...vodAnswers
   };
 }
-
 function validateForm() {
   const d = collectData();
   if (!d.pos_name) { showToast("⚠️ Veuillez saisir le nom du PDV"); goToSection(0); return false; }
