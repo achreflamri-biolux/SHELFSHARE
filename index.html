@@ -575,7 +575,7 @@ const VOD_QUESTIONS = [
 // GOOGLE SHEETS CONFIG
 // Replace GOOGLE_SCRIPT_URL with your deployed Apps Script URL
 // ============================================================
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTxIvAdpkQuA6e-8EQzTLLy2V6F11zVBsiN4PwFFyFZ0nPWJaxiD-XH04slMi6EIM/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyZW0AQcm2vRd4DqSqaVVM99QWVP8_NkBu9fT3SJBGma41DH53FryOadZd9vly3hao/exec";
 
 // ============================================================
 // LOGIC
@@ -769,7 +769,7 @@ async function submitForm() {
   btn.textContent = 'Envoi en cours...';
   const data = collectData();
 
-  if (GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbzTxIvAdpkQuA6e-8EQzTLLy2V6F11zVBsiN4PwFFyFZ0nPWJaxiD-XH04slMi6EIM/exec") {
+  if (GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbyZW0AQcm2vRd4DqSqaVVM99QWVP8_NkBu9fT3SJBGma41DH53FryOadZd9vly3hao/exec") {
     // Demo mode - just show the data
     console.log("Form data:", data);
     showToast("✅ Données enregistrées (mode démo)");
