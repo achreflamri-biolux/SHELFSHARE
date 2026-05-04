@@ -136,7 +136,40 @@
       </div>
     </div>
   </div>
+ <div class="field-group">
+  <label>Client Actif ? <span class="req">*</span></label>
+  <div class="radio-group">
+    <div class="radio-option"><input type="radio" name="active" value="OUI"><label>OUI</label></div>
+    <div class="radio-option"><input type="radio" name="active" value="NON"><label>NON</label></div>
+  </div>
+</div>
 
+<div class="field-group" id="sourceAchatGroup" style="display:none;">
+  <label>Source d'achat</label>
+  <select id="sourceAchat" multiple>
+    <option>B2B</option>
+    <option>2 ème main</option>
+    <option>Centralisé</option>
+    <option>Distributeur hors zone</option>
+    <option>Magasin du distributeur hors zone</option>
+  </select>
+</div>
+
+<div class="field-group" id="causesGroup" style="display:none;">
+  <label>Les causes</label>
+  <select id="causes" multiple>
+    <option>Absence distributeur</option>
+    <option>Absence délégué</option>
+    <option>Absence superiseur</option>
+    <option>Problème avec le distributeur</option>
+    <option>Problème de livraison</option>
+    <option>Problème de disponibilité</option>
+    <option>POS basé sur certaines marques</option>
+    <option>Achat par facilité de paiement</option>
+    <option>Offre plus intéressante</option>
+    <option>Préférence personnelle</option>
+  </select>
+</div>
   <!-- SECTION 2 -->
   <div class="form-section" id="section-1">
     <div class="section-title-card">
@@ -236,25 +269,29 @@ const WILAYAS_COMMUNES = {
 };
 
 const MARQUES_REFERENCES = {
-  "Coca-Cola": ["Coca-Cola 33cl", "Coca-Cola 1L", "Coca-Cola 2L", "Coca-Cola Zero 33cl", "Coca-Cola Zero 1L", "Fanta Orange 33cl", "Fanta Orange 1L", "Sprite 33cl", "Sprite 1L"],
-  "Hamoud Boualem": ["Selecto 25cl", "Selecto 1L", "Selecto 2L", "Slim Citron 25cl", "Slim Citron 1L", "Slim Orange 25cl", "Slim Orange 1L"],
-  "Ifri": ["Ifri Eau 0.5L", "Ifri Eau 1.5L", "Ifri Eau 5L", "Ifri Citron 33cl", "Ifri Pomme 33cl", "Ifri Fraise 33cl", "Ifri Soda Orange 1L"],
-  "Ramy": ["Ramy Jus Orange 20cl", "Ramy Jus Orange 1L", "Ramy Jus Pomme 20cl", "Ramy Jus Pomme 1L", "Ramy Jus Mangue 1L", "Ramy Jus Raisin 1L", "Ramy Up Orange 20cl"],
-  "NCA Rouiba": ["Rouiba Jus Orange 20cl", "Rouiba Jus Orange 1L", "Rouiba Nectar Mangue 1L", "Rouiba Cocktail 20cl", "Rouiba Cocktail 1L", "Rouiba Citronnade 1L"],
-  "Danone": ["Danao Pêche-Abricot 1L", "Danao Orange 1L", "Activia Nature 110g", "Activia Fraise 110g", "Danette Chocolat 90g", "Danette Vanille 90g"],
-  "Cevital": ["Elio Huile 1L", "Elio Huile 2L", "Elio Huile 5L", "Skor Sucre 1kg", "Skor Sucre 5kg", "Tchin Lait 1L"],
-  "Bel (Vache Qui Rit)": ["VQR 8 portions", "VQR 16 portions", "VQR 24 portions", "Kiri 6 portions", "Kiri 12 portions"]
+  "BEKO": ["BAVPG09","BAVPG12","BAVPG18","BAVPG24"],
+  "MAXWELL": ["Mx-CH09-INV4-C","Mx-CH09-INV4-G","Mx-CH09-INV4-S","Mx-CH09T-INV3","Mx-CH12-INV4-C","Mx-CH12-INV4-G","Mx-CH12-INV4-S","Mx-CH12T-INV3","Mx-CH18T-INV3","Mx-CH24T-INV3","MX-X12UT-INV3","MX-X12UT-INV3-SM","MX-X18UT-INV3","MX-X24UT-INV3"],
+  "CONDOR": ["CS09-AL44T3","CS09-AL84ST3","CS09-AL84T3","CS12-AL84ST3","CS12-AL84T3","CS12-AL44T3","CS12-TN33IT3","CS18-AL84ST3","CS18-AL84T3","CS18-AL44T3","CS18-TN33IT3","TENOR CS24-TN33I","CS24-AL74ST3","CS24-AL84T3","CS24-AL44T3"],
+  "CRISTOR": ["KS09-M4IT3","KS12-M4IT3","KS18-M4IT3","KS24-M4IT3"],
+  "BRANDT": ["BTS09ATQC","BTS09ETSC","BTS12ETSC","BTS12ATQC","BTS18ATQC","BTS18ETSC","BTS24ATQC","BTS24ETSC"],
+  "CANDY": ["CCS12-RT3INV","CCS18-RT3INV"],
+  "GEANT": ["GN-TCS09T1","GN-TCS09T3-I","GN-TCS12T3","GN-TCS12T3-I","GN-CSA12QGT3-I","GN-CSH12T3I","GN-TCS12T3F-I","GN-CSA18QGT3-I","GN-CSH18T3-I","GN-CSA18JAT3-I","GN-TCS18T3","GN-TCS18T3-I","GN-TCS18T1","GN-TCS24T3-I"],
+  "HAIER": ["1U12MF1ERA","HSU-12HIPEQW01","HSU-18HIPEQW01","HSU-24HIPEQW01"],
+  "HISENSE": ["AS-12UW4SGETG00","AS-12UW4SGUHB00","AS-18UW4SXATU06B","AS-24UF4SBBTU00A"],
+  "HYUNDAI": ["HYAC-ALGTL12CHSA-EL","HYAC-ALGTL12CHSATI","HYAC-ALGTL12CHSBSI-BG","HYAC-ALGTL12CHSATI-BM","HYAC-ALGTL18CHSBSI-BG","HYAC-ALGTL18CHSATI-BM","HYAC-ALGTL18CHSA-EL","HYAC-ALGTL24CHSA-EI","HYAC-ALGTL24CHSATI-BM","HYAC-ALGTL24CHSBSI-BG"],
+  "LG": ["JET09ALG","ART12ALG","JET12ALG","DUAL12AT3","ART18ALG","JET18ALG","DUAL18AT3","ART22ALG","JET22ALG","DUAL22AT3"],
+  "SAMSUNG": ["AR60F12C1TW2DZ","AR50F12C1QH2DZ","AR18DXFZAWK2DZ","AR60F18C1TW2DZ","AR50F18C1QH2DZ","AR50F24C1QH2DZ"],
+  "TCL": ["TAC-09CHSA/XA73I","TAC-12CHSA/XA81","TAC-12CHSA/XAA1","TAC-12CHSA/TPH11","TAC12CHSA/XA73I","TAC-12CHSA/XAA1T1","TAC-12CHSA/XAF1T","TAC-18CHSA/XAA1","TAC-18CHSA/XA73I","TAC-18CHSA/TPH11","TAC-18CHSA/XAF1T","TAC-24CHSA/XAA1T","TAC-24CHSA/XA73I","TAC-24CHSA/XAAA1","TAC-24CHSA/XAF1T"]
 };
 
 const VOD_QUESTIONS = [
-  { question: "Quel est le type du point de vente ?", options: ["Superette", "Épicerie", "Grossiste", "Supermarché", "Kiosque"] },
-  { question: "Quelle est la taille du magasin ?", options: ["Petit (< 30m²)", "Moyen (30-80m²)", "Grand (> 80m²)"] },
-  { question: "Le PDV possède-t-il un réfrigérateur ?", options: ["Oui - Fonctionnel", "Oui - Non fonctionnel", "Non"] },
-  { question: "Le PDV possède-t-il un présentoir de marque ?", options: ["Oui", "Non"] },
-  { question: "Fréquence de réapprovisionnement ?", options: ["Quotidien", "2-3 fois/semaine", "Hebdomadaire", "Bi-mensuel", "Mensuel"] },
-  { question: "Quel est le mode de paiement utilisé avec les fournisseurs ?", options: ["Espèces", "Chèque", "Virement", "Crédit fournisseur", "Mixte"] },
-  { question: "Y a-t-il de la PLV (Publicité sur Lieu de Vente) visible ?", options: ["Oui - Bien placée", "Oui - Mal placée", "Non - Aucune"] },
-  { question: "Quel est le niveau de satisfaction du propriétaire avec nos produits ?", options: ["Très satisfait", "Satisfait", "Neutre", "Insatisfait", "Très insatisfait"] }
+  { question: "Qu'elle est la marque la plus vendu?", options: ["BEKO","CONDOR","LG","SAMSUNG","TCL","AUTRE"] },
+  { question: "Pourquoi cette marque est la plus demander?", options: ["Prix","Notoriété","Marque","Garantie","SAV","Disponibilité"] },
+  { question: "Action Sell In/ Sell Out", options: ["Remise","Incentive","Tombola","Gift","Installation gratuite","Pack"] },
+  { question: "Les critères les plus demandés?", options: ["Tropical","Super tropical","Inverter","On/Off","Smart"] },
+  { question: "Type de gaz", options: ["R410a","R32"] },
+  { question: "Capacité la plus demandée?", options: ["9000","12000","18000","24000"] },
+  { question: "Couleur", options: ["Noir","Blanc","Autre"] }
 ];
 
 // ============================================================
@@ -389,15 +426,24 @@ function collectData() {
   });
 
   // Base info shared by every row
-  const baseData = {
-    timestamp: new Date().toLocaleString('fr-DZ'),
-    pos_name: document.getElementById('posName').value,
-    pos_owner: document.getElementById('posOwner').value,
-    phone: '+213' + document.getElementById('posPhone').value.replace(/\s/g, ''),
-    gps: document.getElementById('gpsCoords').value,
-    wilaya: document.getElementById('wilayaSelect').value,
-    commune: document.getElementById('communeSelect').value
-  };
+const getMultiValues = (id) =>
+  Array.from(document.getElementById(id)?.selectedOptions || []).map(o => o.value).join(', ');
+
+const active = document.querySelector('input[name="active"]:checked')?.value || '';
+
+const baseData = {
+  timestamp: new Date().toLocaleString('fr-DZ'),
+  pos_name: document.getElementById('posName').value,
+  pos_owner: document.getElementById('posOwner').value,
+  phone: '+213' + document.getElementById('posPhone').value.replace(/\s/g, ''),
+  gps: document.getElementById('gpsCoords').value,
+  wilaya: document.getElementById('wilayaSelect').value,
+  commune: document.getElementById('communeSelect').value,
+
+  active: active,
+  source_achat: getMultiValues('sourceAchat'),
+  causes: getMultiValues('causes')
+};
 
   // Build one row per reference
   const rows = [];
@@ -475,6 +521,7 @@ function showToast(msg) {
 
 document.addEventListener('DOMContentLoaded', () => {
   initForm();
+
   document.getElementById('posPhone').addEventListener('input', function() {
     let v = this.value.replace(/\D/g, '');
     if (v.length > 10) v = v.slice(0, 10);
@@ -483,6 +530,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (v.length >= 10) v = v.slice(0,10) + ' ' + v.slice(10);
     this.value = v;
   });
+
+  // ✅ ADD IT HERE
+  document.addEventListener('change', (e) => {
+    if (e.target.name === 'active') {
+      const isNon = e.target.value === 'NON';
+      document.getElementById('sourceAchatGroup').style.display = isNon ? 'block' : 'none';
+      document.getElementById('causesGroup').style.display = isNon ? 'block' : 'none';
+    }
+  });
+
 });
 </script>
 </body>
