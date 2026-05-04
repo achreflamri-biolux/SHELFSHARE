@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collecte Données PDV</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: #f0ebf8;
+    min-height: 100vh;
+    padding: 0 16px 40px;
+  }
+
+  .form-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding-top: 12px;
+  }
+
+  /* Top color bar card */
+  .header-card {
+    background: #fff;
+    border-radius: 10px;
+    border-top: 10px solid #673ab7;
+    padding: 24px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .header-card h1 {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 32px;
+    color: #202124;
+    margin-bottom: 8px;
+  }
+  .header-card p {
+    color: #70757a;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .required-note {
+    color: #d93025;
+    font-size: 14px;
+    margin-top: 12px;
+    border-top: 1px solid #dadce0;
+    padding-top: 12px;
+  }
+
+  /* Section cards */
+  .section-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    border-left: 4px solid transparent;
+  }
+
+  .section-title-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin-bottom: 12px;
+    margin-top: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    border-top: 4px solid #673ab7;
+  }
+  .section-title-card h2 {
+    font-weight: 400;
+    font-size: 24px;
+    color: #202124;
+  }
+  .section-title-card p {
+    color: #70757a;
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  /* Form elements */
+  .field-group {
+    margin-bottom: 20px;
+  }
+  .field-group:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 14px;
+    color: #202124;
+    margin-bottom: 8px;
+    font-weight: 400;
+  }
+  label .req {
+    color: #d93025;
+    margin-left: 2px;
+  }
+
+  input[type="text"],
+  input[type="tel"],
+  select {
+    width: 100%;
+    padding: 8px 0;
+    border: none;
+    border-bottom: 1px solid #dadce0;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    color: #202124;
+    background: transparent;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus,
+  input[type="tel"]:focus,
+  select:focus {
+    border-bottom: 2px solid #673ab7;
+    margin-bottom: -1px;
+  }
+  input::placeholder { color: #bdc1c6; }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235f6368' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 4px center;
+    padding-right: 24px;
+    cursor: pointer;
+  }
+
+  /* GPS button */
+  .gps-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+  .gps-row input { flex: 1; }
+  .gps-btn {
+    background: #673ab7;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+  }
+  .gps-btn:hover { background: #5e35b1; }
+  .gps-btn.loading { opacity: 0.7; pointer-events: none; }
+  .gps-btn svg { width: 16px; height: 16px; fill: currentColor; }
+  .gps-status {
+    font-size: 12px;
+    margin-top: 4px;
+    color: #5f6368;
+  }
+  .gps-status.success { color: #1e8e3e; }
+  .gps-status.error { color: #d93025; }
+
+  /* ShelfShare table */
+  .brand-selector {
+    margin-bottom: 16px;
+  }
+
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+  }
+  .ref-table th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 500;
+    color: #5f6368;
+    padding: 8px 12px;
+    border-bottom: 2px solid #673ab7;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ref-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f3f4;
+    font-size: 14px;
+    color: #202124;
+  }
+  .ref-table tr:hover { background: #f8f9fa; }
+  .ref-table input[type="number"] {
+    width: 80px;
+    padding: 6px 8px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    text-align: center;
+    outline: none;
+  }
+  .ref-table input[type="number"]:focus {
+    border-color: #673ab7;
+    box-shadow: 0 0 0 1px #673ab7;
+  }
+
+  /* Radio options (VOD) */
+  .radio-group {
+    margin-top: 8px;
+  }
+  .radio-option {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    cursor: pointer;
+  }
+  .radio-option input[type="radio"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #5f6368;
+    border-radius: 50%;
+    margin-right: 12px;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .radio-option input[type="radio"]:checked {
+    border-color: #673ab7;
+  }
+  .radio-option input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 10px; height: 10px;
+    background: #673ab7;
+    border-radius: 50%;
+  }
+  .radio-option label {
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    position: fixed;
+    top: 0; left: 0;
+    height: 4px;
+    background: #673ab7;
+    transition: width 0.3s ease;
+    z-index: 1000;
+  }
+
+  /* Section nav */
+  .section-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 12px;
+  }
+  .nav-btn {
+    background: none;
+    color: #673ab7;
+    border: none;
+    padding: 8px 24px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+  }
+  .nav-btn:hover { background: #ede7f6; }
+
+  /* Submit */
+  .submit-btn {
+    background: #673ab7;
+    color: #fff;
+    border: none;
+    padding: 10px 32px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .submit-btn:hover { background: #5e35b1; }
+  .submit-btn:active { transform: scale(0.98); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Section visibility */
+  .form-section { display: none; }
+  .form-section.active { display: block; }
+
+  /* Step indicator */
+  .steps {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    margin-top: 8px;
+  }
+  .step-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #dadce0;
+    transition: background 0.3s;
+    cursor: pointer;
+  }
+  .step-dot.active { background: #673ab7; }
+  .step-dot.done { background: #a78bdb; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #323232;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 2000;
+    transition: transform 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    body { padding: 0 8px 24px; }
+    .header-card h1 { font-size: 24px; }
+    .ref-table input[type="number"] { width: 64px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="form-container">
+  <!-- Header -->
+  <div class="header-card">
+    <h1>📋 Collecte Données PDV</h1>
+    <p>Formulaire de collecte de données pour les points de vente. Veuillez remplir toutes les sections avec précision.</p>
+    <p class="required-note">* Champs obligatoires</p>
+  </div>
+
+  <div class="steps">
+    <div class="step-dot active" onclick="goToSection(0)"></div>
+    <div class="step-dot" onclick="goToSection(1)"></div>
+    <div class="step-dot" onclick="goToSection(2)"></div>
+  </div>
+
+  <!-- ========== SECTION 1: Informations PDV ========== -->
+  <div class="form-section active" id="section-0">
+    <div class="section-title-card">
+      <h2>📍 Informations du Point de Vente</h2>
+      <p>Section 1 sur 3</p>
+    </div>
+
+    <div class="section-card">
+      <div class="field-group">
+        <label>Nom du PDV <span class="req">*</span></label>
+        <input type="text" id="posName" placeholder="Ex: Superette El Baraka" required>
+      </div>
+      <div class="field-group">
+        <label>Nom du propriétaire <span class="req">*</span></label>
+        <input type="text" id="posOwner" placeholder="Ex: Mohamed Benaissa" required>
+      </div>
+      <div class="field-group">
+        <label>Numéro de téléphone (DZ) <span class="req">*</span></label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="color:#5f6368;font-size:14px;padding-bottom:4px;">+213</span>
+          <input type="tel" id="posPhone" placeholder="0X XX XX XX XX" maxlength="13" required>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Localisation GPS <span class="req">*</span></label>
+        <div class="gps-row">
+          <input type="text" id="gpsCoords" placeholder="Latitude, Longitude" readonly>
+          <button class="gps-btn" id="gpsBtn" onclick="captureGPS()">
+            <svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg>
+            Capturer
+          </button>
+        </div>
+        <div class="gps-status" id="gpsStatus"></div>
+      </div>
+      <div class="field-group">
+        <label>Wilaya <span class="req">*</span></label>
+        <select id="wilayaSelect" onchange="updateCommunes()">
+          <option value="">-- Sélectionner une Wilaya --</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Commune <span class="req">*</span></label>
+        <select id="communeSelect" disabled>
+          <option value="">-- Sélectionner une Commune --</option>
+        </select>
+      </div>
+
+      <div class="section-nav">
+        <div></div>
+        <button class="nav-btn" onclick="nextSection()">Suivant →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 2: ShelfShare ========== -->
+  <div class="form-section" id="section-1">
+    <div class="section-title-card">
+      <h2>📊 ShelfShare</h2>
+      <p>Section 2 sur 3 — Relevé des produits en rayon</p>
+    </div>
+
+    <div class="section-card">
+      <div class="field-group brand-selector">
+        <label>Marque <span class="req">*</span></label>
+        <select id="brandSelect" onchange="updateReferences()">
+          <option value="">-- Sélectionner une Marque --</option>
+        </select>
+      </div>
+
+      <div id="refTableContainer" style="display:none;">
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th>Référence</th>
+              <th>Quantité</th>
+              <th>Prix (DA)</th>
+            </tr>
+          </thead>
+          <tbody id="refTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="section-nav">
+        <button class="nav-btn" onclick="prevSection()">← Précédent</button>
+        <button class="nav-btn" onclick="nextSection()">Suivant →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== SECTION 3: VOD ========== -->
+  <div class="form-section" id="section-2">
+    <div class="section-title-card">
+      <h2>📝 Questionnaire VOD</h2>
+      <p>Section 3 sur 3 — Veuillez répondre à toutes les questions</p>
+    </div>
+
+    <div id="vodContainer"></div>
+
+    <div class="section-card">
+      <div class="section-nav">
+        <button class="nav-btn" onclick="prevSection()">← Précédent</button>
+        <button class="submit-btn" onclick="submitForm()" id="submitBtn">Envoyer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// DATA — Replace these with your actual data
+// ============================================================
+
+const WILAYAS_COMMUNES = {
+  "01 - Adrar": ["Adrar", "Bouda", "Reggane", "Timimoun", "Aoulef", "Tsabit", "In Zghmir"],
+  "02 - Chlef": ["Chlef", "Ténès", "El Karimia", "Oued Fodda", "Boukadir", "Ain Merane"],
+  "03 - Laghouat": ["Laghouat", "Aflou", "Ksar El Hirane", "Hassi R'Mel", "Ain Mahdi"],
+  "04 - Oum El Bouaghi": ["Oum El Bouaghi", "Ain Beida", "Ain M'lila", "Ksar Sbahi"],
+  "05 - Batna": ["Batna", "Barika", "N'Gaous", "Ain Touta", "Merouana", "Tazoult"],
+  "06 - Béjaïa": ["Béjaïa", "Akbou", "Amizour", "El Kseur", "Sidi Aich", "Kherrata"],
+  "07 - Biskra": ["Biskra", "Tolga", "Ouled Djellal", "Sidi Okba", "El Kantara"],
+  "08 - Béchar": ["Béchar", "Kenadsa", "Abadla", "Beni Ounif", "Taghit"],
+  "09 - Blida": ["Blida", "Boufarik", "Mouzaia", "Bougara", "Oued El Alleug", "Larbaâ"],
+  "10 - Bouira": ["Bouira", "Lakhdaria", "Sour El Ghozlane", "M'Chedallah", "Ain Bessem"],
+  "11 - Tamanrasset": ["Tamanrasset", "In Salah", "In Guezzam", "Abalessa"],
+  "12 - Tébessa": ["Tébessa", "Bir El Ater", "Chéria", "El Aouinet", "Boulhaf Dyr"],
+  "13 - Tlemcen": ["Tlemcen", "Maghnia", "Ghazaouet", "Remchi", "Nedroma", "Sebdou"],
+  "14 - Tiaret": ["Tiaret", "Sougueur", "Ksar Chellala", "Frenda", "Ain Deheb"],
+  "15 - Tizi Ouzou": ["Tizi Ouzou", "Azazga", "Draâ El Mizan", "Ain El Hammam", "Boghni", "Larbaa Nath Irathen"],
+  "16 - Alger": ["Alger Centre", "Bab El Oued", "Hussein Dey", "El Harrach", "Bir Mourad Raïs", "Bouzareah", "Dar El Beida", "Bordj El Kiffan", "Ain Benian", "Draria", "Dély Ibrahim", "Chéraga", "Kouba", "Mohammadia", "Rouiba"],
+  "17 - Djelfa": ["Djelfa", "Messaad", "Ain Oussera", "Had Sahary", "Moudjebara"],
+  "18 - Jijel": ["Jijel", "El Milia", "Taher", "Settara", "Chekfa"],
+  "19 - Sétif": ["Sétif", "El Eulma", "Ain Oulmene", "Bougaâ", "Ain Arnat", "Ain Azel"],
+  "20 - Saïda": ["Saïda", "Ain El Hadjar", "Youb", "Hassasna"],
+  "21 - Skikda": ["Skikda", "Azzaba", "Collo", "El Harrouch", "Tamalous"],
+  "22 - Sidi Bel Abbès": ["Sidi Bel Abbès", "Telagh", "Ain El Berd", "Sfisef", "Ben Badis"],
+  "23 - Annaba": ["Annaba", "El Bouni", "Berrahal", "El Hadjar", "Ain El Berda"],
+  "24 - Guelma": ["Guelma", "Bouchegouf", "Oued Zenati", "Héliopolis"],
+  "25 - Constantine": ["Constantine", "El Khroub", "Ain Smara", "Hamma Bouziane", "Didouche Mourad", "Zighoud Youcef"],
+  "26 - Médéa": ["Médéa", "Berrouaghia", "Ksar El Boukhari", "Tablat", "Ain Boucif"],
+  "27 - Mostaganem": ["Mostaganem", "Ain Tedeles", "Hassi Mameche", "Sidi Ali", "Mazagran"],
+  "28 - M'Sila": ["M'Sila", "Bou Saâda", "Sidi Aissa", "Ain El Melh", "Magra"],
+  "29 - Mascara": ["Mascara", "Sig", "Tighennif", "Mohammadia", "Ghriss"],
+  "30 - Ouargla": ["Ouargla", "Touggourt", "Hassi Messaoud", "Taibet", "N'Goussa"],
+  "31 - Oran": ["Oran", "Ain Turk", "Bir El Djir", "Es Sénia", "Arzew", "Bethioua", "Hassi Bounif"],
+  "32 - El Bayadh": ["El Bayadh", "Bougtob", "Brezina", "Labiodh Sidi Cheikh"],
+  "33 - Illizi": ["Illizi", "Djanet", "In Amenas"],
+  "34 - Bordj Bou Arreridj": ["Bordj Bou Arreridj", "Ras El Oued", "Bordj Ghedir", "Bir Kasdali"],
+  "35 - Boumerdès": ["Boumerdès", "Boudouaou", "Khemis El Khechna", "Dellys", "Thénia", "Bordj Menaiel"],
+  "36 - El Tarf": ["El Tarf", "El Kala", "Bouhadjar", "Ben M'hidi", "Besbes"],
+  "37 - Tindouf": ["Tindouf"],
+  "38 - Tissemsilt": ["Tissemsilt", "Theniet El Had", "Bordj Bounaama", "Lardjem"],
+  "39 - El Oued": ["El Oued", "Guemar", "Robbah", "Bayadha", "Debila", "Magrane"],
+  "40 - Khenchela": ["Khenchela", "Kais", "Babar", "Chechar", "El Hamma"],
+  "41 - Souk Ahras": ["Souk Ahras", "Sedrata", "Taoura", "M'Daourouch"],
+  "42 - Tipaza": ["Tipaza", "Cherchell", "Koléa", "Hadjout", "Fouka", "Bou Ismaïl"],
+  "43 - Mila": ["Mila", "Chelghoum Laid", "Ferdjioua", "Grarem Gouga", "Rouached"],
+  "44 - Ain Defla": ["Ain Defla", "Miliana", "Khemis Miliana", "El Attaf", "Djelida"],
+  "45 - Naâma": ["Naâma", "Mécheria", "Ain Sefra", "Tiout"],
+  "46 - Ain Témouchent": ["Ain Témouchent", "El Malah", "Beni Saf", "Hammam Bou Hadjar"],
+  "47 - Ghardaia": ["Ghardaia", "Metlili", "Berriane", "El Guerrara", "Bounoura"],
+  "48 - Relizane": ["Relizane", "Oued Rhiou", "Mazouna", "Ain Tarek", "Djidiouia"]
+};
+
+const MARQUES_REFERENCES = {
+  "Coca-Cola": ["Coca-Cola 33cl", "Coca-Cola 1L", "Coca-Cola 2L", "Coca-Cola Zero 33cl", "Coca-Cola Zero 1L", "Fanta Orange 33cl", "Fanta Orange 1L", "Sprite 33cl", "Sprite 1L"],
+  "Hamoud Boualem": ["Selecto 25cl", "Selecto 1L", "Selecto 2L", "Slim Citron 25cl", "Slim Citron 1L", "Slim Orange 25cl", "Slim Orange 1L"],
+  "Ifri": ["Ifri Eau 0.5L", "Ifri Eau 1.5L", "Ifri Eau 5L", "Ifri Citron 33cl", "Ifri Pomme 33cl", "Ifri Fraise 33cl", "Ifri Soda Orange 1L"],
+  "Ramy": ["Ramy Jus Orange 20cl", "Ramy Jus Orange 1L", "Ramy Jus Pomme 20cl", "Ramy Jus Pomme 1L", "Ramy Jus Mangue 1L", "Ramy Jus Raisin 1L", "Ramy Up Orange 20cl"],
+  "NCA Rouiba": ["Rouiba Jus Orange 20cl", "Rouiba Jus Orange 1L", "Rouiba Nectar Mangue 1L", "Rouiba Cocktail 20cl", "Rouiba Cocktail 1L", "Rouiba Citronnade 1L"],
+  "Danone": ["Danao Pêche-Abricot 1L", "Danao Orange 1L", "Activia Nature 110g", "Activia Fraise 110g", "Danette Chocolat 90g", "Danette Vanille 90g"],
+  "Cevital": ["Elio Huile 1L", "Elio Huile 2L", "Elio Huile 5L", "Skor Sucre 1kg", "Skor Sucre 5kg", "Tchin Lait 1L"],
+  "Bel (Vache Qui Rit)": ["VQR 8 portions", "VQR 16 portions", "VQR 24 portions", "Kiri 6 portions", "Kiri 12 portions"]
+};
+
+const VOD_QUESTIONS = [
+  {
+    question: "Quel est le type du point de vente ?",
+    options: ["Superette", "Épicerie", "Grossiste", "Supermarché", "Kiosque"]
+  },
+  {
+    question: "Quelle est la taille du magasin ?",
+    options: ["Petit (< 30m²)", "Moyen (30-80m²)", "Grand (> 80m²)"]
+  },
+  {
+    question: "Le PDV possède-t-il un réfrigérateur ?",
+    options: ["Oui - Fonctionnel", "Oui - Non fonctionnel", "Non"]
+  },
+  {
+    question: "Le PDV possède-t-il un présentoir de marque ?",
+    options: ["Oui", "Non"]
+  },
+  {
+    question: "Fréquence de réapprovisionnement ?",
+    options: ["Quotidien", "2-3 fois/semaine", "Hebdomadaire", "Bi-mensuel", "Mensuel"]
+  },
+  {
+    question: "Quel est le mode de paiement utilisé avec les fournisseurs ?",
+    options: ["Espèces", "Chèque", "Virement", "Crédit fournisseur", "Mixte"]
+  },
+  {
+    question: "Y a-t-il de la PLV (Publicité sur Lieu de Vente) visible ?",
+    options: ["Oui - Bien placée", "Oui - Mal placée", "Non - Aucune"]
+  },
+  {
+    question: "Quel est le niveau de satisfaction du propriétaire avec nos produits ?",
+    options: ["Très satisfait", "Satisfait", "Neutre", "Insatisfait", "Très insatisfait"]
+  }
+];
+
+// ============================================================
+// GOOGLE SHEETS CONFIG
+// Replace GOOGLE_SCRIPT_URL with your deployed Apps Script URL
+// ============================================================
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTxIvAdpkQuA6e-8EQzTLLy2V6F11zVBsiN4PwFFyFZ0nPWJaxiD-XH04slMi6EIM/exec";
+
+// ============================================================
+// LOGIC
+// ============================================================
+
+let currentSection = 0;
+const totalSections = 3;
+
+// Populate wilayas
+function initForm() {
+  const wSel = document.getElementById('wilayaSelect');
+  Object.keys(WILAYAS_COMMUNES).forEach(w => {
+    const opt = document.createElement('option');
+    opt.value = w; opt.textContent = w;
+    wSel.appendChild(opt);
+  });
+
+  const bSel = document.getElementById('brandSelect');
+  Object.keys(MARQUES_REFERENCES).forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b; opt.textContent = b;
+    bSel.appendChild(opt);
+  });
+
+  renderVOD();
+  updateProgress();
+}
+
+function updateCommunes() {
+  const wSel = document.getElementById('wilayaSelect');
+  const cSel = document.getElementById('communeSelect');
+  cSel.innerHTML = '<option value="">-- Sélectionner une Commune --</option>';
+  const communes = WILAYAS_COMMUNES[wSel.value];
+  if (communes) {
+    cSel.disabled = false;
+    communes.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      cSel.appendChild(opt);
+    });
+  } else {
+    cSel.disabled = true;
+  }
+}
+
+function updateReferences() {
+  const brand = document.getElementById('brandSelect').value;
+  const container = document.getElementById('refTableContainer');
+  const tbody = document.getElementById('refTableBody');
+  tbody.innerHTML = '';
+  if (!brand) { container.style.display = 'none'; return; }
+  container.style.display = 'block';
+  MARQUES_REFERENCES[brand].forEach((ref, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${ref}</td>
+      <td><input type="number" min="0" value="0" id="qty_${i}" placeholder="0"></td>
+      <td><input type="number" min="0" value="" id="price_${i}" placeholder="DA"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderVOD() {
+  const container = document.getElementById('vodContainer');
+  VOD_QUESTIONS.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'section-card';
+    let html = `<div class="field-group">
+      <label>${q.question} <span class="req">*</span></label>
+      <div class="radio-group">`;
+    q.options.forEach((opt, oi) => {
+      const id = `vod_${qi}_${oi}`;
+      html += `<div class="radio-option">
+        <input type="radio" name="vod_${qi}" id="${id}" value="${opt}">
+        <label for="${id}">${opt}</label>
+      </div>`;
+    });
+    html += `</div></div>`;
+    card.innerHTML = html;
+    container.appendChild(card);
+  });
+}
+
+// GPS
+function captureGPS() {
+  const btn = document.getElementById('gpsBtn');
+  const status = document.getElementById('gpsStatus');
+  if (!navigator.geolocation) {
+    status.textContent = "La géolocalisation n'est pas supportée par ce navigateur.";
+    status.className = 'gps-status error';
+    return;
+  }
+  btn.classList.add('loading');
+  btn.innerHTML = `<svg viewBox="0 0 24 24" class="spin"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg> Recherche...`;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      document.getElementById('gpsCoords').value = `${lat}, ${lng}`;
+      status.textContent = `✓ Position capturée (précision: ${Math.round(pos.coords.accuracy)}m)`;
+      status.className = 'gps-status success';
+      btn.classList.remove('loading');
+      btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg> Recapturer`;
+    },
+    (err) => {
+      status.textContent = "Erreur: " + (err.code === 1 ? "Permission refusée" : err.code === 2 ? "Position non disponible" : "Délai dépassé");
+      status.className = 'gps-status error';
+      btn.classList.remove('loading');
+      btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/></svg> Capturer`;
+    },
+    { enableHighAccuracy: true, timeout: 15000 }
+  );
+}
+
+// Navigation
+function goToSection(idx) {
+  currentSection = idx;
+  document.querySelectorAll('.form-section').forEach((s, i) => {
+    s.classList.toggle('active', i === idx);
+  });
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextSection() {
+  if (currentSection < totalSections - 1) goToSection(currentSection + 1);
+}
+function prevSection() {
+  if (currentSection > 0) goToSection(currentSection - 1);
+}
+
+function updateProgress() {
+  const pct = ((currentSection + 1) / totalSections) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.querySelectorAll('.step-dot').forEach((dot, i) => {
+    dot.classList.remove('active', 'done');
+    if (i === currentSection) dot.classList.add('active');
+    else if (i < currentSection) dot.classList.add('done');
+  });
+}
+
+// Collect all data
+function collectData() {
+  const brand = document.getElementById('brandSelect').value;
+  const refs = MARQUES_REFERENCES[brand] || [];
+  const shelfData = refs.map((ref, i) => ({
+    reference: ref,
+    quantite: document.getElementById(`qty_${i}`)?.value || 0,
+    prix: document.getElementById(`price_${i}`)?.value || ''
+  }));
+
+  const vodAnswers = {};
+  VOD_QUESTIONS.forEach((q, qi) => {
+    const selected = document.querySelector(`input[name="vod_${qi}"]:checked`);
+    vodAnswers[`Q${qi+1}: ${q.question}`] = selected ? selected.value : '';
+  });
+
+  return {
+    timestamp: new Date().toISOString(),
+    pos_name: document.getElementById('posName').value,
+    pos_owner: document.getElementById('posOwner').value,
+    phone: '+213' + document.getElementById('posPhone').value,
+    gps: document.getElementById('gpsCoords').value,
+    wilaya: document.getElementById('wilayaSelect').value,
+    commune: document.getElementById('communeSelect').value,
+    brand: brand,
+    shelf_data: JSON.stringify(shelfData),
+    ...vodAnswers
+  };
+}
+
+// Validate
+function validateForm() {
+  const d = collectData();
+  if (!d.pos_name) { showToast("⚠️ Veuillez saisir le nom du PDV"); goToSection(0); return false; }
+  if (!d.pos_owner) { showToast("⚠️ Veuillez saisir le nom du propriétaire"); goToSection(0); return false; }
+  if (!d.phone || d.phone.length < 7) { showToast("⚠️ Veuillez saisir un numéro valide"); goToSection(0); return false; }
+  if (!d.gps) { showToast("⚠️ Veuillez capturer la localisation GPS"); goToSection(0); return false; }
+  if (!d.wilaya) { showToast("⚠️ Veuillez sélectionner une Wilaya"); goToSection(0); return false; }
+  if (!d.commune) { showToast("⚠️ Veuillez sélectionner une Commune"); goToSection(0); return false; }
+  if (!d.brand) { showToast("⚠️ Veuillez sélectionner une marque"); goToSection(1); return false; }
+  return true;
+}
+
+// Submit
+async function submitForm() {
+  if (!validateForm()) return;
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+  const data = collectData();
+
+  if (GOOGLE_SCRIPT_URL === "https://script.google.com/macros/s/AKfycbzTxIvAdpkQuA6e-8EQzTLLy2V6F11zVBsiN4PwFFyFZ0nPWJaxiD-XH04slMi6EIM/exec") {
+    // Demo mode - just show the data
+    console.log("Form data:", data);
+    showToast("✅ Données enregistrées (mode démo)");
+    btn.disabled = false;
+    btn.textContent = 'Envoyer';
+    return;
+  }
+
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    showToast("✅ Données envoyées avec succès !");
+    // Reset form after short delay
+    setTimeout(() => {
+      if (confirm("Formulaire envoyé ! Voulez-vous saisir un nouveau PDV ?")) {
+        location.reload();
+      }
+    }, 1500);
+  } catch (err) {
+    showToast("❌ Erreur d'envoi. Réessayez.");
+    console.error(err);
+  }
+  btn.disabled = false;
+  btn.textContent = 'Envoyer';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Phone formatting
+document.addEventListener('DOMContentLoaded', () => {
+  initForm();
+  document.getElementById('posPhone').addEventListener('input', function(e) {
+    let v = this.value.replace(/\D/g, '');
+    if (v.length > 10) v = v.slice(0, 10);
+    if (v.length >= 4) v = v.slice(0,4) + ' ' + v.slice(4);
+    if (v.length >= 7) v = v.slice(0,7) + ' ' + v.slice(7);
+    if (v.length >= 10) v = v.slice(0,10) + ' ' + v.slice(10);
+    this.value = v;
+  });
+});
+</script>
+
+<style>
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .spin { animation: spin 1s linear infinite; }
+</style>
+</body>
+</html>
