@@ -396,7 +396,7 @@ const MARQUES_REFERENCES = {
 const VOD_QUESTIONS = [
   { question: "Qu'elle est la marque la plus vendu?", selectFromMarques: true },
   { question: "Pourquoi cette marque est la plus demander?", multiple: true, options: ["Prix","Notoriété","Marque","Garantie","SAV","Disponibilité"] },
-  { question: "Action Sell In/ Sell Out", multiple: true, options: ["Remise","Incentive","Tombola","Gift","Installation gratuite","Pack"] },
+  { question: "Action Sell In/ Sell Out ", multiple: true, options: ["Remise","Incentive","Tombola","Gift","Installation gratuite","Pack"] },
   { question: "Les critères les plus demandés?", multiple: true, options: ["Tropical","Super tropical","Inverter","On/Off","Smart"] },
   { question: "Type de gaz", options: ["R410a","R32"] },
   { question: "Capacité la plus demandée?", options: ["9000 BTU","12000 BTU","18000 BTU","24000 BTU"] },
@@ -561,7 +561,7 @@ function renderVOD() {
   VOD_QUESTIONS.forEach((q, qi) => {
     const card = document.createElement('div');
     card.className = 'section-card';
-    let html = `<div class="field-group"><label>${q.question} <span class="req">*</span></label>`;
+    let html = `<div class="field-group"><label>${q.question} <span class="req">*</span></label>${q.multiple ? '<span style="font-size:11px;color:#9e9e9e;display:block;margin-top:-4px;margin-bottom:6px;font-style:italic;">Choix multiple</span>' : ''}`;
 
     if (q.selectFromMarques) {
       html += `<select name="vod_${qi}" id="vod_${qi}_sel">`;
