@@ -692,6 +692,9 @@ function collectData() {
     const refs = MARQUES_REFERENCES[brand];
     refs.forEach(ref => {
       const refData = brandsData[brand][ref] || { qty: '', prix: '' };
+      const qty = parseFloat(refData.qty) || 0;
+      const prix = parseFloat(refData.prix) || 0;
+      if (qty === 0 && prix === 0) return;
       rows.push({
         ...baseData,
         brand,
