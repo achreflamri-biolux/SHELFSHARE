@@ -34,12 +34,11 @@
   .gps-status { font-size: 12px; margin-top: 4px; color: #5f6368; }
   .gps-status.success { color: #1e8e3e; }
   .gps-status.error { color: #d93025; }
-  .brand-selector { margin-bottom: 16px; }
-  .ref-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  .ref-table { width: 100%; border-collapse: collapse; }
   .ref-table th { text-align: left; font-size: 12px; font-weight: 500; color: #5f6368; padding: 8px 12px; border-bottom: 2px solid #673ab7; text-transform: uppercase; letter-spacing: 0.5px; }
   .ref-table td { padding: 8px 12px; border-bottom: 1px solid #f1f3f4; font-size: 14px; color: #202124; }
-  .ref-table tr:hover { background: #f8f9fa; }
-  .ref-table input[type="number"] { width: 80px; padding: 6px 8px; border: 1px solid #dadce0; border-radius: 4px; font-size: 14px; font-family: 'Roboto', sans-serif; text-align: center; outline: none; }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .ref-table input[type="number"] { width: 80px; padding: 6px 8px; border: 1px solid #dadce0; border-radius: 4px; font-size: 14px; font-family: 'Roboto', sans-serif; text-align: center; outline: none; background: #fff; }
   .ref-table input[type="number"]:focus { border-color: #673ab7; box-shadow: 0 0 0 1px #673ab7; }
   .radio-group { margin-top: 8px; }
   .radio-option { display: flex; align-items: center; padding: 8px 0; cursor: pointer; }
@@ -63,9 +62,32 @@
   .step-dot.done { background: #a78bdb; }
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; font-size: 14px; z-index: 2000; transition: transform 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
   .toast.show { transform: translateX(-50%) translateY(0); }
-  @media (max-width: 480px) { body { padding: 0 8px 24px; } .header-card h1 { font-size: 24px; } .ref-table input[type="number"] { width: 64px; } }
+  @media (max-width: 480px) { body { padding: 0 8px 24px; } .header-card h1 { font-size: 24px; } .ref-table input[type="number"] { width: 56px; } }
   @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   .spin { animation: spin 1s linear infinite; }
+
+  /* Google Form-style checkboxes */
+  .checkbox-group { margin-top: 4px; }
+  .checkbox-option { display: flex; align-items: center; padding: 9px 0; cursor: pointer; border-radius: 4px; }
+  .checkbox-option:hover { background: #f8f9fa; margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
+  .checkbox-option input[type="checkbox"] { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border: 2px solid #5f6368; border-radius: 2px; margin-right: 14px; position: relative; cursor: pointer; flex-shrink: 0; transition: background 0.15s, border-color 0.15s; }
+  .checkbox-option input[type="checkbox"]:checked { background: #673ab7; border-color: #673ab7; }
+  .checkbox-option input[type="checkbox"]:checked::after { content: ''; position: absolute; left: 2px; top: -1px; width: 10px; height: 6px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg); }
+  .checkbox-option label { margin-bottom: 0; cursor: pointer; font-size: 14px; color: #202124; }
+
+  /* Brand accordion */
+  .brand-list { border: 1px solid #dadce0; border-radius: 8px; overflow: hidden; margin-top: 8px; }
+  .brand-item { border-bottom: 1px solid #dadce0; }
+  .brand-item:last-child { border-bottom: none; }
+  .brand-item-header { display: flex; align-items: center; padding: 13px 16px; cursor: pointer; user-select: none; transition: background 0.15s; gap: 10px; }
+  .brand-item-header:hover { background: #f8f9fa; }
+  .brand-item.open > .brand-item-header { background: #ede7f6; }
+  .brand-name-label { flex: 1; font-size: 14px; font-weight: 500; color: #202124; }
+  .brand-badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 500; white-space: nowrap; }
+  .brand-badge.has-data { background: #e8f5e9; color: #1e8e3e; }
+  .brand-chevron { width: 20px; height: 20px; fill: #5f6368; transition: transform 0.25s; flex-shrink: 0; }
+  .brand-item.open .brand-chevron { transform: rotate(180deg); }
+  .brand-table-container { background: #fafafa; border-top: 1px solid #e8eaed; }
 </style>
 </head>
 <body>
@@ -130,40 +152,86 @@
           <option value="">-- Sélectionner une Commune --</option>
         </select>
       </div>
-       <div class="field-group">
-  <label>Client Actif ? <span class="req">*</span></label>
-  <div class="radio-group">
-    <div class="radio-option"><input type="radio" name="active" value="OUI"><label>OUI</label></div>
-    <div class="radio-option"><input type="radio" name="active" value="NON"><label>NON</label></div>
-  </div>
-</div>
+      <div class="field-group">
+        <label>Client Actif ? <span class="req">*</span></label>
+        <div class="radio-group">
+          <div class="radio-option"><input type="radio" name="active" value="OUI"><label>OUI</label></div>
+          <div class="radio-option"><input type="radio" name="active" value="NON"><label>NON</label></div>
+        </div>
+      </div>
 
-<div class="field-group" id="sourceAchatGroup" style="display:none;">
-  <label>Source d'achat</label>
-  <select id="sourceAchat" multiple>
-    <option>B2B</option>
-    <option>2 ème main</option>
-    <option>Centralisé</option>
-    <option>Distributeur hors zone</option>
-    <option>Magasin du distributeur hors zone</option>
-  </select>
-</div>
+      <div class="field-group" id="sourceAchatGroup" style="display:none;">
+        <label>Source d'achat</label>
+        <div class="checkbox-group">
+          <div class="checkbox-option">
+            <input type="checkbox" name="sourceAchat" id="sa_b2b" value="B2B">
+            <label for="sa_b2b">B2B</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="sourceAchat" id="sa_2main" value="2 ème main">
+            <label for="sa_2main">2 ème main</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="sourceAchat" id="sa_central" value="Centralisé">
+            <label for="sa_central">Centralisé</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="sourceAchat" id="sa_dhhz" value="Distributeur hors zone">
+            <label for="sa_dhhz">Distributeur hors zone</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="sourceAchat" id="sa_mdhz" value="Magasin du distributeur hors zone">
+            <label for="sa_mdhz">Magasin du distributeur hors zone</label>
+          </div>
+        </div>
+      </div>
 
-<div class="field-group" id="causesGroup" style="display:none;">
-  <label>Les causes</label>
-  <select id="causes" multiple>
-    <option>Absence distributeur</option>
-    <option>Absence délégué</option>
-    <option>Absence superiseur</option>
-    <option>Problème avec le distributeur</option>
-    <option>Problème de livraison</option>
-    <option>Problème de disponibilité</option>
-    <option>POS basé sur certaines marques</option>
-    <option>Achat par facilité de paiement</option>
-    <option>Offre plus intéressante</option>
-    <option>Préférence personnelle</option>
-  </select>
-</div>
+      <div class="field-group" id="causesGroup" style="display:none;">
+        <label>Les causes</label>
+        <div class="checkbox-group">
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_absd" value="Absence distributeur">
+            <label for="ca_absd">Absence distributeur</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_absdel" value="Absence délégué">
+            <label for="ca_absdel">Absence délégué</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_abssup" value="Absence superviseur">
+            <label for="ca_abssup">Absence superviseur</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_pbdist" value="Problème avec le distributeur">
+            <label for="ca_pbdist">Problème avec le distributeur</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_pbliv" value="Problème de livraison">
+            <label for="ca_pbliv">Problème de livraison</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_pbdispo" value="Problème de disponibilité">
+            <label for="ca_pbdispo">Problème de disponibilité</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_pos" value="POS basé sur certaines marques">
+            <label for="ca_pos">POS basé sur certaines marques</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_facilite" value="Achat par facilité de paiement">
+            <label for="ca_facilite">Achat par facilité de paiement</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_offre" value="Offre plus intéressante">
+            <label for="ca_offre">Offre plus intéressante</label>
+          </div>
+          <div class="checkbox-option">
+            <input type="checkbox" name="causes" id="ca_pref" value="Préférence personnelle">
+            <label for="ca_pref">Préférence personnelle</label>
+          </div>
+        </div>
+      </div>
+
       <div class="section-nav">
         <div></div>
         <button class="nav-btn" onclick="nextSection()">Suivant →</button>
@@ -178,19 +246,9 @@
       <p>Section 2 sur 3 — Relevé des produits en rayon</p>
     </div>
     <div class="section-card">
-      <div class="field-group brand-selector">
-        <label>Marque <span class="req">*</span></label>
-        <select id="brandSelect" onchange="updateReferences()">
-          <option value="">-- Sélectionner une Marque --</option>
-        </select>
-      </div>
-      <div id="refTableContainer" style="display:none;">
-        <table class="ref-table">
-          <thead>
-            <tr><th>Référence</th><th>Quantité</th><th>Prix (DA)</th></tr>
-          </thead>
-          <tbody id="refTableBody"></tbody>
-        </table>
+      <div class="field-group">
+        <label>Marques <span class="req">*</span> — Cliquez sur une marque pour saisir ses données</label>
+        <div id="brandList" class="brand-list"></div>
       </div>
       <div class="section-nav">
         <button class="nav-btn" onclick="prevSection()">← Précédent</button>
@@ -295,14 +353,14 @@ const VOD_QUESTIONS = [
   { question: "Couleur", options: ["Noir","Blanc","Autre"] }
 ];
 
-// ============================================================
-// GOOGLE SHEETS — Your deployed Apps Script URL
-// ============================================================
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-O8gSmUfRrEEU_el7BbeqV32eto2ZeoW0EAgdrbEvqvt9NK83myVqEnFjMD7aLTY/exec";
 
 // ============================================================
 let currentSection = 0;
 const totalSections = 3;
+
+// Stores {ref: {qty, prix}} for every brand that has been opened
+const brandsData = {};
 
 function initForm() {
   const wSel = document.getElementById('wilayaSelect');
@@ -311,15 +369,110 @@ function initForm() {
     opt.value = w; opt.textContent = w;
     wSel.appendChild(opt);
   });
-  const bSel = document.getElementById('brandSelect');
-  Object.keys(MARQUES_REFERENCES).forEach(b => {
-    const opt = document.createElement('option');
-    opt.value = b; opt.textContent = b;
-    bSel.appendChild(opt);
-  });
+  initBrandList();
   renderVOD();
   updateProgress();
 }
+
+// ============================================================
+// BRAND ACCORDION
+// ============================================================
+function initBrandList() {
+  const container = document.getElementById('brandList');
+  Object.keys(MARQUES_REFERENCES).forEach(brand => {
+    const safeId = brand.replace(/[^a-zA-Z0-9]/g, '_');
+    const item = document.createElement('div');
+    item.className = 'brand-item';
+    item.id = 'brand-item-' + safeId;
+    item.innerHTML =
+      '<div class="brand-item-header" onclick="toggleBrand(\'' + brand + '\')">' +
+        '<span class="brand-name-label">' + brand + '</span>' +
+        '<span class="brand-badge" id="badge-' + safeId + '"></span>' +
+        '<svg class="brand-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>' +
+      '</div>' +
+      '<div class="brand-table-container" id="btable-' + safeId + '" style="display:none;">' +
+        '<table class="ref-table">' +
+          '<thead><tr><th>Référence</th><th>Quantité</th><th>Prix (DA)</th></tr></thead>' +
+          '<tbody id="tbody-' + safeId + '"></tbody>' +
+        '</table>' +
+      '</div>';
+    container.appendChild(item);
+  });
+}
+
+function getBrandSafeId(brand) {
+  return brand.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+function toggleBrand(brand) {
+  const safeId = getBrandSafeId(brand);
+  const item = document.getElementById('brand-item-' + safeId);
+  const tableContainer = document.getElementById('btable-' + safeId);
+  const isOpen = item.classList.contains('open');
+
+  if (isOpen) {
+    saveBrandData(brand);
+    item.classList.remove('open');
+    tableContainer.style.display = 'none';
+  } else {
+    item.classList.add('open');
+    tableContainer.style.display = 'block';
+    populateBrandTable(brand);
+  }
+}
+
+function populateBrandTable(brand) {
+  const safeId = getBrandSafeId(brand);
+  const tbody = document.getElementById('tbody-' + safeId);
+  tbody.innerHTML = '';
+  const refs = MARQUES_REFERENCES[brand];
+  const saved = brandsData[brand] || {};
+
+  refs.forEach(function(ref, i) {
+    const savedQty = saved[ref] ? saved[ref].qty : '0';
+    const savedPrix = saved[ref] ? saved[ref].prix : '';
+    const tr = document.createElement('tr');
+    const qtyId = 'qty-' + safeId + '-' + i;
+    const prixId = 'prix-' + safeId + '-' + i;
+    tr.innerHTML =
+      '<td style="font-size:12px;word-break:break-all;">' + ref + '</td>' +
+      '<td><input type="number" min="0" value="' + savedQty + '" id="' + qtyId + '" oninput="saveBrandData(\'' + brand + '\')" placeholder="0"></td>' +
+      '<td><input type="number" min="0" value="' + savedPrix + '" id="' + prixId + '" oninput="saveBrandData(\'' + brand + '\')" placeholder="DA"></td>';
+    tbody.appendChild(tr);
+  });
+
+  // Initialize brandsData for this brand if first open
+  if (!brandsData[brand]) saveBrandData(brand);
+}
+
+function saveBrandData(brand) {
+  const safeId = getBrandSafeId(brand);
+  const refs = MARQUES_REFERENCES[brand];
+  const data = {};
+  let filledCount = 0;
+
+  refs.forEach(function(ref, i) {
+    const qtyEl = document.getElementById('qty-' + safeId + '-' + i);
+    const prixEl = document.getElementById('prix-' + safeId + '-' + i);
+    const qty = qtyEl ? (qtyEl.value || '0') : '0';
+    const prix = prixEl ? (prixEl.value || '') : '';
+    data[ref] = { qty: qty, prix: prix };
+    if (parseFloat(qty) > 0) filledCount++;
+  });
+
+  brandsData[brand] = data;
+
+  const badge = document.getElementById('badge-' + safeId);
+  if (filledCount > 0) {
+    badge.textContent = filledCount + ' / ' + refs.length + ' réf.';
+    badge.className = 'brand-badge has-data';
+  } else {
+    badge.textContent = '';
+    badge.className = 'brand-badge';
+  }
+}
+
+// ============================================================
 
 function updateCommunes() {
   const wSel = document.getElementById('wilayaSelect');
@@ -334,20 +487,6 @@ function updateCommunes() {
       cSel.appendChild(opt);
     });
   } else { cSel.disabled = true; }
-}
-
-function updateReferences() {
-  const brand = document.getElementById('brandSelect').value;
-  const container = document.getElementById('refTableContainer');
-  const tbody = document.getElementById('refTableBody');
-  tbody.innerHTML = '';
-  if (!brand) { container.style.display = 'none'; return; }
-  container.style.display = 'block';
-  MARQUES_REFERENCES[brand].forEach((ref, i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${ref}</td><td><input type="number" min="0" value="0" id="qty_${i}" placeholder="0"></td><td><input type="number" min="0" value="" id="price_${i}" placeholder="DA"></td>`;
-    tbody.appendChild(tr);
-  });
 }
 
 function renderVOD() {
@@ -413,49 +552,45 @@ function updateProgress() {
 }
 
 // ============================================================
-// COLLECT DATA — Returns an ARRAY of rows (one row per reference)
+// COLLECT DATA — Returns one row per reference across ALL opened brands
 // ============================================================
 function collectData() {
-  const brand = document.getElementById('brandSelect').value;
-  const refs = MARQUES_REFERENCES[brand] || [];
-
-  // Gather VOD answers
   const vodAnswers = {};
   VOD_QUESTIONS.forEach((q, qi) => {
     const selected = document.querySelector(`input[name="vod_${qi}"]:checked`);
     vodAnswers['Q' + (qi + 1)] = selected ? selected.value : '';
   });
 
-  // Base info shared by every row
-const getMultiValues = (id) =>
-  Array.from(document.getElementById(id)?.selectedOptions || []).map(o => o.value).join(', ');
+  const active = document.querySelector('input[name="active"]:checked')?.value || '';
+  const source_achat = Array.from(document.querySelectorAll('input[name="sourceAchat"]:checked')).map(cb => cb.value).join(', ');
+  const causes = Array.from(document.querySelectorAll('input[name="causes"]:checked')).map(cb => cb.value).join(', ');
 
-const active = document.querySelector('input[name="active"]:checked')?.value || '';
+  const baseData = {
+    timestamp: new Date().toLocaleString('fr-DZ'),
+    pos_name: document.getElementById('posName').value,
+    pos_owner: document.getElementById('posOwner').value,
+    phone: '+213' + document.getElementById('posPhone').value.replace(/\s/g, ''),
+    gps: document.getElementById('gpsCoords').value,
+    wilaya: document.getElementById('wilayaSelect').value,
+    commune: document.getElementById('communeSelect').value,
+    active,
+    source_achat,
+    causes
+  };
 
-const baseData = {
-  timestamp: new Date().toLocaleString('fr-DZ'),
-  pos_name: document.getElementById('posName').value,
-  pos_owner: document.getElementById('posOwner').value,
-  phone: '+213' + document.getElementById('posPhone').value.replace(/\s/g, ''),
-  gps: document.getElementById('gpsCoords').value,
-  wilaya: document.getElementById('wilayaSelect').value,
-  commune: document.getElementById('communeSelect').value,
-
-  active: active,
-  source_achat: getMultiValues('sourceAchat'),
-  causes: getMultiValues('causes')
-};
-
-  // Build one row per reference
   const rows = [];
-  refs.forEach((ref, i) => {
-    rows.push({
-      ...baseData,
-      brand: brand,
-      reference: ref,
-      quantite: document.getElementById('qty_' + i) ? document.getElementById('qty_' + i).value : '0',
-      prix: document.getElementById('price_' + i) ? document.getElementById('price_' + i).value : '',
-      ...vodAnswers
+  Object.keys(brandsData).forEach(brand => {
+    const refs = MARQUES_REFERENCES[brand];
+    refs.forEach(ref => {
+      const refData = brandsData[brand][ref] || { qty: '0', prix: '' };
+      rows.push({
+        ...baseData,
+        brand,
+        reference: ref,
+        quantite: refData.qty || '0',
+        prix: refData.prix || '',
+        ...vodAnswers
+      });
     });
   });
 
@@ -463,7 +598,6 @@ const baseData = {
 }
 
 function validateForm() {
-  const brand = document.getElementById('brandSelect').value;
   const posName = document.getElementById('posName').value;
   const posOwner = document.getElementById('posOwner').value;
   const phone = document.getElementById('posPhone').value;
@@ -477,12 +611,12 @@ function validateForm() {
   if (!gps) { showToast("⚠️ Veuillez capturer la localisation GPS"); goToSection(0); return false; }
   if (!wilaya) { showToast("⚠️ Veuillez sélectionner une Wilaya"); goToSection(0); return false; }
   if (!commune) { showToast("⚠️ Veuillez sélectionner une Commune"); goToSection(0); return false; }
-  if (!brand) { showToast("⚠️ Veuillez sélectionner une marque"); goToSection(1); return false; }
+  if (Object.keys(brandsData).length === 0) { showToast("⚠️ Veuillez ouvrir et remplir au moins une marque"); goToSection(1); return false; }
   return true;
 }
 
 // ============================================================
-// SUBMIT — Sends array of rows to Google Sheets
+// SUBMIT
 // ============================================================
 async function submitForm() {
   if (!validateForm()) return;
@@ -532,7 +666,6 @@ document.addEventListener('DOMContentLoaded', () => {
     this.value = v;
   });
 
-  // ✅ ADD IT HERE
   document.addEventListener('change', (e) => {
     if (e.target.name === 'active') {
       const isNon = e.target.value === 'NON';
@@ -540,7 +673,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('causesGroup').style.display = isNon ? 'block' : 'none';
     }
   });
-
 });
 </script>
 </body>
