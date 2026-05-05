@@ -558,7 +558,7 @@ function collectData() {
   const vodAnswers = {};
   VOD_QUESTIONS.forEach((q, qi) => {
     const selected = document.querySelector(`input[name="vod_${qi}"]:checked`);
-    vodAnswers['Q' + (qi + 1)] = selected ? selected.value : '';
+    vodAnswers[q.question] = selected ? selected.value : '';
   });
 
   const active = document.querySelector('input[name="active"]:checked')?.value || '';
@@ -582,13 +582,13 @@ function collectData() {
   Object.keys(brandsData).forEach(brand => {
     const refs = MARQUES_REFERENCES[brand];
     refs.forEach(ref => {
-      const refData = brandsData[brand][ref] || { qty: '0', prix: '' };
+      const refData = brandsData[brand][ref] || { qty: '', prix: '' };
       rows.push({
         ...baseData,
         brand,
         reference: ref,
         quantite: refData.qty || '0',
-        prix: refData.prix || '',
+        prix: refData.prix || '0',
         ...vodAnswers
       });
     });
