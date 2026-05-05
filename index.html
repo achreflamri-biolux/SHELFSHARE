@@ -752,6 +752,22 @@ function validateForm() {
     if (!causesChecked) { showToast("⚠️ Veuillez sélectionner au moins une cause"); goToSection(0); return false; }
   }
   if (Object.keys(brandsData).length === 0) { showToast("⚠️ Veuillez ouvrir et remplir au moins une marque"); goToSection(1); return false; }
+  for (const brand of Object.keys(brandsData)) {
+    for (const ref of Object.keys(brandsData[brand])) {
+      const d = brandsData[brand][ref];
+      const qty = parseFloat(d.qty) || 0;
+      const prix = parseFloat(d.prix) || 0;
+      if (qty > 0 && prix === 0) {
+        showToast(`⚠️ Prix manquant pour ${ref} (${brand})`);
+        goToSection(1);
+        return false;
+      }
+    }
+  }
+  const gazIdx = VOD_QUESTIONS.findIndex(q => q.question === "Type de gaz");
+  if (gazIdx !== -1 && !document.querySelector(`input[name="vod_${gazIdx}"]:checked`)) {
+    showToast("⚠️ Veuillez sélectionner le type de gaz"); goToSection(2); return false;
+  }
   const marqueIdx = VOD_QUESTIONS.findIndex(q => q.selectFromMarques);
   if (marqueIdx !== -1) {
     const marqueEl = document.getElementById('vod_' + marqueIdx + '_sel');
