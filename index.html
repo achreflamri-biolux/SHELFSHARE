@@ -744,6 +744,13 @@ function validateForm() {
   if (!gps) { showToast("⚠️ Veuillez capturer la localisation GPS"); goToSection(0); return false; }
   if (!wilaya) { showToast("⚠️ Veuillez sélectionner une Wilaya"); goToSection(0); return false; }
   if (!commune) { showToast("⚠️ Veuillez sélectionner une Commune"); goToSection(0); return false; }
+  const activeVal = document.querySelector('input[name="active"]:checked')?.value || '';
+  if (activeVal === 'NON') {
+    const sourceChecked = document.querySelectorAll('input[name="sourceAchat"]:checked').length;
+    const causesChecked = document.querySelectorAll('input[name="causes"]:checked').length;
+    if (!sourceChecked) { showToast("⚠️ Veuillez sélectionner au moins une source d'achat"); goToSection(0); return false; }
+    if (!causesChecked) { showToast("⚠️ Veuillez sélectionner au moins une cause"); goToSection(0); return false; }
+  }
   if (Object.keys(brandsData).length === 0) { showToast("⚠️ Veuillez ouvrir et remplir au moins une marque"); goToSection(1); return false; }
   const marqueIdx = VOD_QUESTIONS.findIndex(q => q.selectFromMarques);
   if (marqueIdx !== -1) {
@@ -809,6 +816,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const isNon = e.target.value === 'NON';
       document.getElementById('sourceAchatGroup').style.display = isNon ? 'block' : 'none';
       document.getElementById('causesGroup').style.display = isNon ? 'block' : 'none';
+      if (!isNon) {
+        document.querySelectorAll('input[name="sourceAchat"]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('input[name="causes"]').forEach(cb => cb.checked = false);
+      }
     }
   });
 });
