@@ -454,7 +454,7 @@ function saveBrandData(brand) {
   refs.forEach(function(ref, i) {
     const qtyEl = document.getElementById('qty-' + safeId + '-' + i);
     const prixEl = document.getElementById('prix-' + safeId + '-' + i);
-    const qty = qtyEl ? (qtyEl.value || '0') : '0';
+    const qty = qtyEl ? (qtyEl.value || '') : '';
     const prix = prixEl ? (prixEl.value || '') : '';
     data[ref] = { qty: qty, prix: prix };
     if (parseFloat(qty) > 0) filledCount++;
