@@ -88,16 +88,66 @@
   .brand-chevron { width: 20px; height: 20px; fill: #5f6368; transition: transform 0.25s; flex-shrink: 0; }
   .brand-item.open .brand-chevron { transform: rotate(180deg); }
   .brand-table-container { background: #fafafa; border-top: 1px solid #e8eaed; }
+
+  /* Landing screen */
+  .landing-screen { position: fixed; inset: 0; background: #f0ebf8; display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 16px; }
+  .landing-card { background: #fff; border-radius: 12px; border-top: 10px solid #673ab7; padding: 40px 32px; max-width: 420px; width: 100%; box-shadow: 0 4px 20px rgba(103,58,183,0.15); text-align: center; }
+  .landing-emoji { font-size: 52px; margin-bottom: 16px; }
+  .landing-card h1 { font-family: 'Roboto', sans-serif; font-weight: 400; font-size: 26px; color: #202124; margin-bottom: 8px; }
+  .landing-card > p { color: #70757a; font-size: 14px; margin-bottom: 32px; line-height: 1.5; }
+  .landing-select-group { text-align: left; margin-bottom: 28px; }
+  .landing-select-group label { display: block; font-size: 11px; color: #5f6368; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; font-weight: 500; }
+  .landing-select-group select { width: 100%; padding: 12px 36px 12px 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; font-family: 'Roboto', sans-serif; color: #202124; background: #fff; outline: none; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%235f6368' d='M2 4l4 4 4-4z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; transition: border-color 0.2s; }
+  .landing-select-group select:focus { border-color: #673ab7; box-shadow: 0 0 0 2px rgba(103,58,183,0.15); }
+  .start-btn { background: #673ab7; color: #fff; border: none; padding: 14px 32px; font-size: 15px; font-weight: 500; font-family: 'Roboto', sans-serif; cursor: pointer; border-radius: 8px; width: 100%; letter-spacing: 0.3px; transition: background 0.2s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .start-btn:hover { background: #5e35b1; }
+  .start-btn:active { transform: scale(0.98); }
+  .landing-divider { border: none; border-top: 1px solid #f1f3f4; margin: 24px 0; }
+  .landing-version { font-size: 11px; color: #bdc1c6; }
+  .merchandiser-badge { display: inline-block; background: #ede7f6; color: #673ab7; font-size: 13px; font-weight: 500; padding: 4px 12px; border-radius: 20px; margin-top: 10px; }
 </style>
 </head>
 <body>
 
+<!-- LANDING SCREEN -->
+<div id="landingScreen" class="landing-screen">
+  <div class="landing-card">
+    <div class="landing-emoji">📋</div>
+    <h1>Collecte Données PDV</h1>
+    <p>Sélectionnez votre nom pour commencer une visite terrain</p>
+    <div class="landing-select-group">
+      <label for="merchandiserSelect">Merchandiser</label>
+      <select id="merchandiserSelect">
+        <option value="">-- Sélectionner votre nom --</option>
+        <option>Amari Aymen</option>
+        <option>Dahoumane Hani</option>
+        <option>Attba Ben attba Said</option>
+        <option>Berrachdi Anis</option>
+        <option>Allouach Lahcen</option>
+        <option>Libarir Mohamed Redouane</option>
+        <option>Chaib draa Khalil Ibrahim</option>
+        <option>Bouchemla Nassim</option>
+        <option>Abbas Moundhir</option>
+        <option>M'hamedi Khaled</option>
+        <option>Kalkoula Mohamed Reda Sofiane</option>
+      </select>
+    </div>
+    <button class="start-btn" onclick="startVisit()">
+      <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor;"><path d="M8 5v14l11-7z"/></svg>
+      Commencer la visite
+    </button>
+    <hr class="landing-divider">
+    <span class="landing-version">SHELF — Relevé PDV v2.0</span>
+  </div>
+</div>
+
 <div class="progress-bar" id="progressBar"></div>
 
-<div class="form-container">
+<div class="form-container" id="mainForm" style="display:none;">
   <div class="header-card">
     <h1>📋 Collecte Données PDV</h1>
     <p>Formulaire de collecte de données pour les points de vente. Veuillez remplir toutes les sections avec précision.</p>
+    <div id="merchandiserBadge" class="merchandiser-badge"></div>
     <p class="required-note">* Champs obligatoires</p>
   </div>
 
@@ -344,13 +394,13 @@ const MARQUES_REFERENCES = {
 };
 
 const VOD_QUESTIONS = [
-  { question: "Qu'elle est la marque la plus vendu?", options: ["BEKO","CONDOR","LG","SAMSUNG","TCL","AUTRE"] },
+  { question: "Qu'elle est la marque la plus vendu?", selectFromMarques: true },
   { question: "Pourquoi cette marque est la plus demander?", multiple: true, options: ["Prix","Notoriété","Marque","Garantie","SAV","Disponibilité"] },
   { question: "Action Sell In/ Sell Out", multiple: true, options: ["Remise","Incentive","Tombola","Gift","Installation gratuite","Pack"] },
   { question: "Les critères les plus demandés?", multiple: true, options: ["Tropical","Super tropical","Inverter","On/Off","Smart"] },
   { question: "Type de gaz", options: ["R410a","R32"] },
-  { question: "Capacité la plus demandée?", options: ["9000","12000","18000","24000"] },
-  { question: "Couleur", options: ["Noir","Blanc","Autre"] }
+  { question: "Capacité la plus demandée?", options: ["9000 BTU","12000 BTU","18000 BTU","24000 BTU"] },
+  { question: "Couleur", hasOther: true, options: ["Noir","Blanc","Autre"] }
 ];
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-O8gSmUfRrEEU_el7BbeqV32eto2ZeoW0EAgdrbEvqvt9NK83myVqEnFjMD7aLTY/exec";
@@ -358,9 +408,25 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-O8gSmUfRrE
 // ============================================================
 let currentSection = 0;
 const totalSections = 3;
+let merchandiserName = '';
 
 // Stores {ref: {qty, prix}} for every brand that has been opened
 const brandsData = {};
+
+function startVisit() {
+  const sel = document.getElementById('merchandiserSelect');
+  if (!sel.value) {
+    sel.style.borderColor = '#d93025';
+    sel.style.boxShadow = '0 0 0 2px rgba(217,48,37,0.15)';
+    setTimeout(() => { sel.style.borderColor = ''; sel.style.boxShadow = ''; }, 1500);
+    showToast("⚠️ Veuillez sélectionner votre nom");
+    return;
+  }
+  merchandiserName = sel.value;
+  document.getElementById('landingScreen').style.display = 'none';
+  document.getElementById('mainForm').style.display = 'block';
+  document.getElementById('merchandiserBadge').textContent = '👤 ' + merchandiserName;
+}
 
 function initForm() {
   const wSel = document.getElementById('wilayaSelect');
@@ -494,20 +560,44 @@ function renderVOD() {
   VOD_QUESTIONS.forEach((q, qi) => {
     const card = document.createElement('div');
     card.className = 'section-card';
-    const groupClass = q.multiple ? 'checkbox-group' : 'radio-group';
-    let html = `<div class="field-group"><label>${q.question} <span class="req">*</span></label><div class="${groupClass}">`;
-    q.options.forEach((opt, oi) => {
-      const id = `vod_${qi}_${oi}`;
-      if (q.multiple) {
-        html += `<div class="checkbox-option"><input type="checkbox" name="vod_${qi}" id="${id}" value="${opt}"><label for="${id}">${opt}</label></div>`;
-      } else {
-        html += `<div class="radio-option"><input type="radio" name="vod_${qi}" id="${id}" value="${opt}"><label for="${id}">${opt}</label></div>`;
-      }
-    });
-    html += `</div></div>`;
+    let html = `<div class="field-group"><label>${q.question} <span class="req">*</span></label>`;
+
+    if (q.selectFromMarques) {
+      html += `<select name="vod_${qi}" id="vod_${qi}_sel">`;
+      html += `<option value="">-- Sélectionner une marque --</option>`;
+      [...Object.keys(MARQUES_REFERENCES), 'AUTRE'].forEach(b => {
+        html += `<option value="${b}">${b}</option>`;
+      });
+      html += `</select>`;
+    } else {
+      const groupClass = q.multiple ? 'checkbox-group' : 'radio-group';
+      html += `<div class="${groupClass}">`;
+      q.options.forEach((opt, oi) => {
+        const id = `vod_${qi}_${oi}`;
+        if (q.multiple) {
+          html += `<div class="checkbox-option"><input type="checkbox" name="vod_${qi}" id="${id}" value="${opt}"><label for="${id}">${opt}</label></div>`;
+        } else {
+          const onChange = q.hasOther ? ` onchange="toggleOther(${qi})"` : '';
+          html += `<div class="radio-option"><input type="radio" name="vod_${qi}" id="${id}" value="${opt}"${onChange}><label for="${id}">${opt}</label></div>`;
+          if (q.hasOther && opt === 'Autre') {
+            html += `<div id="other_${qi}" style="display:none;padding:4px 0 4px 32px;"><input type="text" id="other_text_${qi}" placeholder="Précisez..." style="width:100%;font-size:14px;font-family:Roboto,sans-serif;border:none;border-bottom:1px solid #dadce0;padding:4px 0;outline:none;background:transparent;"></div>`;
+          }
+        }
+      });
+      html += `</div>`;
+    }
+
+    html += `</div>`;
     card.innerHTML = html;
     container.appendChild(card);
   });
+}
+
+function toggleOther(qi) {
+  const isOther = document.querySelector(`input[name="vod_${qi}"][value="Autre"]`)?.checked;
+  const div = document.getElementById('other_' + qi);
+  if (div) div.style.display = isOther ? 'block' : 'none';
+  if (!isOther) { const t = document.getElementById('other_text_' + qi); if (t) t.value = ''; }
 }
 
 function captureGPS() {
@@ -562,11 +652,19 @@ function updateProgress() {
 function collectData() {
   const vodAnswers = {};
   VOD_QUESTIONS.forEach((q, qi) => {
-    if (q.multiple) {
+    if (q.selectFromMarques) {
+      const sel = document.getElementById(`vod_${qi}_sel`);
+      vodAnswers[q.question] = sel ? sel.value : '';
+    } else if (q.multiple) {
       vodAnswers[q.question] = Array.from(document.querySelectorAll(`input[name="vod_${qi}"]:checked`)).map(cb => cb.value).join(', ');
     } else {
       const sel = document.querySelector(`input[name="vod_${qi}"]:checked`);
-      vodAnswers[q.question] = sel ? sel.value : '';
+      if (q.hasOther && sel?.value === 'Autre') {
+        const txt = document.getElementById('other_text_' + qi)?.value?.trim();
+        vodAnswers[q.question] = txt || 'Autre';
+      } else {
+        vodAnswers[q.question] = sel ? sel.value : '';
+      }
     }
   });
 
@@ -576,6 +674,7 @@ function collectData() {
 
   const baseData = {
     timestamp: new Date().toLocaleString('fr-DZ'),
+    merchandiser: merchandiserName,
     pos_name: document.getElementById('posName').value,
     pos_owner: document.getElementById('posOwner').value,
     phone: '+213' + document.getElementById('posPhone').value.replace(/\s/g, ''),
