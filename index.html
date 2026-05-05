@@ -260,7 +260,7 @@
   <!-- SECTION 3 -->
   <div class="form-section" id="section-2">
     <div class="section-title-card">
-      <h2>📝 Questionnaire VOD</h2>
+      <h2>Questionnaire VOD & VOC</h2>
       <p>Section 3 sur 3 — Veuillez répondre à toutes les questions</p>
     </div>
     <div id="vodContainer"></div>
@@ -345,9 +345,9 @@ const MARQUES_REFERENCES = {
 
 const VOD_QUESTIONS = [
   { question: "Qu'elle est la marque la plus vendu?", options: ["BEKO","CONDOR","LG","SAMSUNG","TCL","AUTRE"] },
-  { question: "Pourquoi cette marque est la plus demander?", options: ["Prix","Notoriété","Marque","Garantie","SAV","Disponibilité"] },
-  { question: "Action Sell In/ Sell Out", options: ["Remise","Incentive","Tombola","Gift","Installation gratuite","Pack"] },
-  { question: "Les critères les plus demandés?", options: ["Tropical","Super tropical","Inverter","On/Off","Smart"] },
+  { question: "Pourquoi cette marque est la plus demander?", multiple: true, options: ["Prix","Notoriété","Marque","Garantie","SAV","Disponibilité"] },
+  { question: "Action Sell In/ Sell Out", multiple: true, options: ["Remise","Incentive","Tombola","Gift","Installation gratuite","Pack"] },
+  { question: "Les critères les plus demandés?", multiple: true, options: ["Tropical","Super tropical","Inverter","On/Off","Smart"] },
   { question: "Type de gaz", options: ["R410a","R32"] },
   { question: "Capacité la plus demandée?", options: ["9000","12000","18000","24000"] },
   { question: "Couleur", options: ["Noir","Blanc","Autre"] }
@@ -494,10 +494,15 @@ function renderVOD() {
   VOD_QUESTIONS.forEach((q, qi) => {
     const card = document.createElement('div');
     card.className = 'section-card';
-    let html = `<div class="field-group"><label>${q.question} <span class="req">*</span></label><div class="radio-group">`;
+    const groupClass = q.multiple ? 'checkbox-group' : 'radio-group';
+    let html = `<div class="field-group"><label>${q.question} <span class="req">*</span></label><div class="${groupClass}">`;
     q.options.forEach((opt, oi) => {
       const id = `vod_${qi}_${oi}`;
-      html += `<div class="radio-option"><input type="radio" name="vod_${qi}" id="${id}" value="${opt}"><label for="${id}">${opt}</label></div>`;
+      if (q.multiple) {
+        html += `<div class="checkbox-option"><input type="checkbox" name="vod_${qi}" id="${id}" value="${opt}"><label for="${id}">${opt}</label></div>`;
+      } else {
+        html += `<div class="radio-option"><input type="radio" name="vod_${qi}" id="${id}" value="${opt}"><label for="${id}">${opt}</label></div>`;
+      }
     });
     html += `</div></div>`;
     card.innerHTML = html;
@@ -557,8 +562,12 @@ function updateProgress() {
 function collectData() {
   const vodAnswers = {};
   VOD_QUESTIONS.forEach((q, qi) => {
-    const selected = document.querySelector(`input[name="vod_${qi}"]:checked`);
-    vodAnswers[q.question] = selected ? selected.value : '';
+    if (q.multiple) {
+      vodAnswers[q.question] = Array.from(document.querySelectorAll(`input[name="vod_${qi}"]:checked`)).map(cb => cb.value).join(', ');
+    } else {
+      const sel = document.querySelector(`input[name="vod_${qi}"]:checked`);
+      vodAnswers[q.question] = sel ? sel.value : '';
+    }
   });
 
   const active = document.querySelector('input[name="active"]:checked')?.value || '';
