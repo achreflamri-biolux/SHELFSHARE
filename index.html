@@ -137,7 +137,7 @@
       Commencer la visite
     </button>
     <hr class="landing-divider">
-    <span class="landing-version">SHELF — Relevé PDV v2.0</span>
+    
   </div>
 </div>
 
@@ -724,6 +724,11 @@ function validateForm() {
   if (!wilaya) { showToast("⚠️ Veuillez sélectionner une Wilaya"); goToSection(0); return false; }
   if (!commune) { showToast("⚠️ Veuillez sélectionner une Commune"); goToSection(0); return false; }
   if (Object.keys(brandsData).length === 0) { showToast("⚠️ Veuillez ouvrir et remplir au moins une marque"); goToSection(1); return false; }
+  const marqueIdx = VOD_QUESTIONS.findIndex(q => q.selectFromMarques);
+  if (marqueIdx !== -1) {
+    const marqueEl = document.getElementById('vod_' + marqueIdx + '_sel');
+    if (!marqueEl || !marqueEl.value) { showToast("⚠️ Veuillez sélectionner la marque dominante"); goToSection(2); return false; }
+  }
   return true;
 }
 
