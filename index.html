@@ -429,7 +429,7 @@ function populateBrandTable(brand) {
   const saved = brandsData[brand] || {};
 
   refs.forEach(function(ref, i) {
-    const savedQty = saved[ref] ? saved[ref].qty : '0';
+    const savedQty = saved[ref] ? saved[ref].qty : '';
     const savedPrix = saved[ref] ? saved[ref].prix : '';
     const tr = document.createElement('tr');
     const qtyId = 'qty-' + safeId + '-' + i;
