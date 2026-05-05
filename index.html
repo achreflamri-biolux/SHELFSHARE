@@ -467,7 +467,7 @@ function initForm() {
 // ============================================================
 function initBrandList() {
   const container = document.getElementById('brandList');
-  Object.keys(MARQUES_REFERENCES).sort().forEach(brand => {
+  Object.keys(MARQUES_REFERENCES).forEach(brand => {
     const safeId = brand.replace(/[^a-zA-Z0-9]/g, '_');
     const item = document.createElement('div');
     item.className = 'brand-item';
@@ -587,7 +587,7 @@ function renderVOD() {
     if (q.selectFromMarques) {
       html += `<select name="vod_${qi}" id="vod_${qi}_sel">`;
       html += `<option value="">-- Sélectionner une marque --</option>`;
-      [...Object.keys(MARQUES_REFERENCES).sort(), 'AUTRE'].forEach(b => {
+      [...Object.keys(MARQUES_REFERENCES), 'AUTRE'].forEach(b => {
         html += `<option value="${b}">${b}</option>`;
       });
       html += `</select>`;
