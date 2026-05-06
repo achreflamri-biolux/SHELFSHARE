@@ -180,7 +180,7 @@
         </div>
       </div>
       <div class="field-group">
-        <label>Localisation GPS <span class="req">*</span></label>
+        <label>Localisation GPS <span class="req" id="gpsReqStar">*</span></label>
         <div class="gps-row">
           <input type="text" id="gpsCoords" placeholder="Latitude, Longitude" readonly>
           <button class="gps-btn" id="gpsBtn" onclick="captureGPS()">
@@ -448,6 +448,22 @@ function startVisit() {
   document.getElementById('landingScreen').style.display = 'none';
   document.getElementById('mainForm').style.display = 'block';
   document.getElementById('merchandiserBadge').textContent = '👤 ' + merchandiserName;
+  updateGPSRequirement();
+}
+
+function updateGPSRequirement() {
+  const exempt = ['Bouchemla Nassim', 'Attba Ben attba Said'].includes(merchandiserName);
+  const input = document.getElementById('gpsCoords');
+  const star = document.getElementById('gpsReqStar');
+  if (exempt) {
+    input.removeAttribute('readonly');
+    input.placeholder = 'Latitude, Longitude (optionnel)';
+    star.style.display = 'none';
+  } else {
+    input.setAttribute('readonly', '');
+    input.placeholder = 'Latitude, Longitude';
+    star.style.display = '';
+  }
 }
 
 function initForm() {
@@ -741,7 +757,8 @@ function validateForm() {
   if (!posName) { showToast("⚠️ Veuillez saisir le nom du PDV"); goToSection(0); return false; }
   if (!posOwner) { showToast("⚠️ Veuillez saisir le nom du propriétaire"); goToSection(0); return false; }
   if (!phone || phone.length < 7) { showToast("⚠️ Veuillez saisir un numéro valide"); goToSection(0); return false; }
-  if (!gps) { showToast("⚠️ Veuillez capturer la localisation GPS"); goToSection(0); return false; }
+  const gpsExempt = ['Bouchemla Nassim', 'Attba Ben attba Said'].includes(merchandiserName);
+  if (!gps && !gpsExempt) { showToast("⚠️ Veuillez capturer la localisation GPS"); goToSection(0); return false; }
   if (!wilaya) { showToast("⚠️ Veuillez sélectionner une Wilaya"); goToSection(0); return false; }
   if (!commune) { showToast("⚠️ Veuillez sélectionner une Commune"); goToSection(0); return false; }
   const activeVal = document.querySelector('input[name="active"]:checked')?.value || '';
