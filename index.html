@@ -561,7 +561,7 @@ function saveBrandData(brand) {
     const qty = qtyEl ? (qtyEl.value || '') : '';
     const prix = prixEl ? (prixEl.value || '') : '';
     data[ref] = { qty: qty, prix: prix };
-    if (parseFloat(qty) > 0) filledCount++;
+    if (parseFloat(qty) > 0 || parseFloat(prix) > 0) filledCount++;
   });
 
   brandsData[brand] = data;
